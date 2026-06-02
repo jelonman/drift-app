@@ -8,7 +8,11 @@ const globalForPrisma = globalThis as unknown as {
 
 function makePrisma() {
   const url = process.env.DATABASE_URL;
-  if (!url) throw new Error("DATABASE_URL is not set");
+  if (!url) {
+    throw new Error(
+      "DATABASE_URL is not set. On Vercel, add Vercel Postgres (Storage tab) and set DATABASE_URL to the POSTGRES_URL value."
+    );
+  }
 
   const adapter =
     url.startsWith("postgres://") || url.startsWith("postgresql://")
