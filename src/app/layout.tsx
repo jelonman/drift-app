@@ -33,7 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <nav style={{ borderBottom: "1px solid var(--color-ink-100)", background: "var(--color-cream-50)" }}>
           <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
             <Link href="/" className="serif" style={{ fontSize: "1.35rem", fontWeight: 500, color: "var(--color-ink-900)" }}>
-              Four
+              omicron
             </Link>
             <div className="flex items-center gap-1 text-sm" style={{ color: "var(--color-ink-500)" }}>
               <Link href="/a" className="btn-ghost">Three Dots</Link>

@@ -43,7 +43,7 @@ export default async function Home() {
   return (
     <div className="max-w-5xl mx-auto px-6 pt-20 pb-32">
       <div className="max-w-2xl">
-        <p className="pill pill-forest mb-6">Four small tools, one quiet site</p>
+        <p className="pill pill-forest mb-6">omicron — small tools, one quiet site</p>
         <h1 className="mb-6">
           The friction in your life, four small fixes.
         </h1>

@@ -34,6 +34,7 @@ const MOOD_LABELS: Record<string, string> = {
 };
 
 export async function POST(req: Request) {
+  try {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
 
@@ -120,4 +121,8 @@ Output JSON with this exact shape:
   });
 
   return NextResponse.json({ id: convo.id });
+  } catch (err) {
+    console.error("[a/conversations] error:", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }

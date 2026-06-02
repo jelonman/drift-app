@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       </div>
 
       <p>
-        Four is a small site. We collect only what we need to run the four apps
+        omicron is a small site. We collect only what we need to run the four apps
         and to send you the emails you opt into. We do not sell anything, to
         anyone, ever. There are no third-party trackers, no pixels, no analytics
         scripts in your browser.

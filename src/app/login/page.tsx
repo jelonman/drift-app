@@ -33,7 +33,7 @@ export default function LoginPage() {
     <div className="max-w-md mx-auto px-6 pt-20 pb-32">
       <h1 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>Welcome back</h1>
       <p className="muted" style={{ marginBottom: "1.5rem" }}>
-        Log in to your Four account.
+        Log in to your omicron account.
       </p>
       <form onSubmit={onSubmit} className="card space-y-4">
         <div>

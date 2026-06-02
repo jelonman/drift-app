@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 const apiKey = process.env.OPENROUTER_API_KEY;
-const model = process.env.OPENROUTER_MODEL || "anthropic/claude-3.5-sonnet";
+const model = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
 
 // OpenRouter is OpenAI-compatible. We instantiate lazily so the build doesn't need the key.
 let _client: OpenAI | null = null;
@@ -49,14 +49,22 @@ export async function aiCall(opts: AIOptions): Promise<string> {
 }
 
 export async function aiJson<T = unknown>(opts: AIOptions): Promise<T> {
-  const text = await aiCall({ ...opts, json: true });
+  const text = await aiCall({ ...opts });
+  const clean = (s: string) => {
+    // Strip markdown code fences if the model wrapped JSON in them
+    const m = s.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (m) return m[1].trim();
+    // Strip leading/trailing backticks
+    return s.replace(/^`+|`+$/g, "").trim();
+  };
+  const t = clean(text);
   try {
-    return JSON.parse(text) as T;
+    return JSON.parse(t) as T;
   } catch {
-    // Try to extract JSON from the response if the model wrapped it
-    const m = text.match(/\{[\s\S]*\}/);
+    // Last resort: regex extract JSON object from the text
+    const m = t.match(/\{[\s\S]*\}/);
     if (m) return JSON.parse(m[0]) as T;
-    throw new Error("AI did not return valid JSON: " + text.slice(0, 200));
+    throw new Error("AI did not return valid JSON: " + t.slice(0, 200));
   }
 }
 

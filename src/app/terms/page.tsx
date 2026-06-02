@@ -1,6 +1,6 @@
 export const metadata = {
   title: "Terms — omicron",
-  description: "The rules of the road for using Four.",
+  description: "The rules of the road for using omicron.",
 };
 
 export default function TermsPage() {
@@ -12,17 +12,17 @@ export default function TermsPage() {
       </div>
 
       <p>
-        By using Four you agree to the following. The short version: be a
+        By using omicron you agree to the following. The short version: be a
         reasonable person, do not break the site, do not use the AI to harm
         anyone, and you can cancel your subscription any time.
       </p>
 
       <section>
         <h2 className="serif" style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>
-          What Four is
+          What omicron is
         </h2>
         <p style={{ lineHeight: 1.7 }}>
-          Four is four small web apps: Three Dots (reply drafting for hard
+          omicron is four small web apps: Three Dots (reply drafting for hard
           conversations), Tag In (splitting household tasks from voice memos
           and texts), Tonight (weekly meal planning from a fridge photo or
           pantry list), and Still Here (drafting personal openers to friends

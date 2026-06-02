@@ -44,7 +44,7 @@ export default function OpengraphImage() {
               letterSpacing: "-0.01em",
             }}
           >
-            Four
+            omicron
           </div>
         </div>
 
