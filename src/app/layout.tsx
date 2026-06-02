@@ -61,6 +61,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <span>Four — small tools for the friction in your life</span>
             <span className="flex items-center gap-4">
               <Link href="/help" className="hover:text-[var(--color-ink-700)]">Help</Link>
+              <Link href="/pricing" className="hover:text-[var(--color-ink-700)]">Pricing</Link>
               <Link href="/privacy" className="hover:text-[var(--color-ink-700)]">Privacy</Link>
               <Link href="/terms" className="hover:text-[var(--color-ink-700)]">Terms</Link>
               <a href="mailto:hello@four.tools" className="hover:text-[var(--color-ink-700)]">Contact</a>
