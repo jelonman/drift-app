@@ -34,7 +34,10 @@ async function send(
   // Resend in test mode only allows sending to the account owner's email.
   // Skip silently if the recipient is someone else; we'll get full delivery once a domain is verified.
   const ownerEmail = "piosarna@outlook.com";
-  if (to !== ownerEmail && fromAddress() === FROM_DEV) {
+  const baseEmail = to.split("+")[0].split("@")[0];
+  const ownerBase = ownerEmail.split("+")[0].split("@")[0];
+  const isOwner = baseEmail === ownerBase && to.endsWith("@" + ownerEmail.split("@")[1]);
+  if (!isOwner && fromAddress() === FROM_DEV) {
     console.log(`[email] skip (test mode, not owner): ${to} — ${subject}`);
     return { ok: false, error: "skipped: test mode" };
   }
