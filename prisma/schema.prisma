@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id                String         @id @default(cuid())
+  email             String         @unique
+  passwordHash      String
+  createdAt         DateTime       @default(now())
+  stripeCustomerId  String?        @unique
+
+  // A. Three Dots
+  conversations     Conversation[]
+
+  // B. Tag In
+  ownedFamilies     Family[]       @relation("FamilyOwner")
+  tasks             Task[]         @relation("TaskAssignee")
+
+  // C. Tonight
+  pantryItems       PantryItem[]
+  meals             Meal[]
+  plans             MealPlan[]
+
+  // D. Still Here
+  friends           Friend[]
+}
+
+// === A. THREE DOTS ===
+model Conversation {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stage       String   // new_match, pre_date, post_date, dating, situationship, exclusivity, etc.
+  mood        String   // anxious, hopeful, frustrated, neutral, etc.
+  pastedText  String
+  createdAt   DateTime @default(now())
+  replies     Reply[]
+
+  @@index([userId, createdAt])
+}
+
+model Reply {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  tone           String       // warm, playful, direct, leave_space
+  text           String
+  rationale      String
+  createdAt      DateTime     @default(now())
+}
+
+// === B. TAG IN ===
+model Family {
+  id            String   @id @default(cuid())
+  ownerId       String
+  owner         User     @relation("FamilyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  partnerEmail  String?
+  pairedAt      DateTime?
+  inviteCode    String   @unique @default(cuid())
+  createdAt     DateTime @default(now())
+  tasks         Task[]
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  familyId    String
+  family      Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  assigneeId  String?
+  assignee    User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  title       String
+  description String?
+  status      String    @default("open") // open, in_progress, done
+  dueDate     DateTime?
+  source      String    @default("ai") // ai, manual
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([familyId, status])
+}
+
+// === C. TONIGHT ===
+model PantryItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item      String
+  category  String   // produce, protein, dairy, pantry, frozen, other
+  addedAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+model MealPlan {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart DateTime
+  planJson  String   // JSON: { days: [{ date, meals: [{ name, ingredients, instructions }] }] }
+  groceryList String? // JSON: grouped grocery list
+  createdAt DateTime @default(now())
+
+  @@index([userId, weekStart])
+}
+
+model Meal {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  name      String
+  cooked    Boolean  @default(false)
+  rating    Int?     // 1-5
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+}
+
+// === D. STILL HERE ===
+model Friend {
+  id              String       @id @default(cuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  relationship    String       // college_friend, work_friend, neighbor, family, etc.
+  contactInfo     String?      // phone, email, handle
+  notes           String?      // free-form context
+  importantDates  String?      // JSON: { birthday: "...", anniversary: "..." }
+  lastContactAt   DateTime?
+  createdAt       DateTime     @default(now())
+  touchpoints     Touchpoint[]
+  openers         Opener[]
+
+  @@index([userId, lastContactAt])
+}
+
+model Touchpoint {
+  id        String   @id @default(cuid())
+  friendId  String
+  friend    Friend   @relation(fields: [friendId], references: [id], onDelete: Cascade)
+  date      DateTime
+  note      String?
+  channel   String?  // text, call, in_person, email, dm
+  createdAt DateTime @default(now())
+
+  @@index([friendId, date])
+}
+
+model Opener {
+  id        String   @id @default(cuid())
+  friendId  String
+  friend    Friend   @relation(fields: [friendId], references: [id], onDelete: Cascade)
+  tone      String   // warm, callback, forward
+  text      String
+  sent      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,8 @@
+allowBuilds:
+  '@prisma/engines': true
+  prisma: true
+  sharp: true
+  '@prisma/client': true
+  'better-sqlite3': true
+ignoredBuiltDependencies: []
+minimumReleaseAge: 0

@@ -1,0 +1,3 @@
+{
+  "onlyBuiltDependencies": ["sharp", "@prisma/engines", "prisma", "@prisma/client"]
+}
