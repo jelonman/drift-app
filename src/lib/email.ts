@@ -31,6 +31,7 @@ async function send(
     console.log(`[email] would send to ${to}: ${subject}`);
     return { ok: false, error: "RESEND_API_KEY not set" };
   }
+  console.log(`[email] sending to ${to}: ${subject}`);
   // Resend in test mode only allows sending to the account owner's email.
   // Skip silently if the recipient is someone else; we'll get full delivery once a domain is verified.
   const ownerEmail = "piosarna@outlook.com";
@@ -53,6 +54,7 @@ async function send(
       console.error(`[email] Resend error:`, res.error);
       return { ok: false, error: res.error.message };
     }
+    console.log(`[email] sent to ${to}: id=${res.data?.id}`);
     return { ok: true, id: res.data?.id };
   } catch (err) {
     console.error(`[email] send failed:`, err);
