@@ -1,26 +1,30 @@
 # Four — State
 
-**Live session:** 2026-06-01
-**What was built:** Four fully working consumer AI apps in one Next.js monorepo, each at its own URL, each with its own data model, AI behavior, and pricing.
+**Live URL:** https://drift-app-gamma.vercel.app
+**GitHub:** https://github.com/jelonman/drift-app (currently public; can be made private once Vercel GitHub App is granted access)
+**Vercel project:** `jelonmans-projects/drift-app` (hobby plan)
+**Database:** Neon (free v3) — `curly-wave-21703969` (auto-provisioned by Vercel marketplace integration)
+**Region:** us-east-1
 
 ## What's here
 
 ```
 drift-app/
-├── prisma/schema.prisma     # 9 models: User + 4 app data models
+├── prisma/
+│   ├── schema.prisma            # SQLite (local dev)
+│   ├── schema.postgres.prisma   # PostgreSQL (Vercel prod)
+│   ├── migrations/              # SQLite init migration
+│   └── dev.db                   # local SQLite (gitignored)
 ├── src/lib/
-│   ├── db.ts                # Prisma + better-sqlite3 (works locally + Turso for prod)
-│   ├── auth.ts              # email+password, JWT cookie, bcrypt
-│   ├── ai.ts                # OpenRouter client, NO_SLOP_RULES, json-mode helper
-│   └── stripe.ts            # stub for now (test-mode ready, needs keys)
-├── src/app/
-│   ├── page.tsx             # Landing (directory of 4 apps)
-│   ├── signup, login        # auth pages
-│   ├── a/                   # Three Dots (texting anxiety coach)
-│   ├── b/                   # Tag In (parent load balancer)
-│   ├── c/                   # Tonight (dinner decider)
-│   ├── d/                   # Still Here (friendship drift coach)
-│   └── api/                 # JSON endpoints for each app
+│   ├── db.ts                    # Provider-aware Prisma client (lazy via Proxy)
+│   ├── auth.ts                  # jose JWT, bcrypt
+│   ├── ai.ts                    # OpenRouter + NO_SLOP_RULES
+│   └── stripe.ts                # stub
+├── src/app/                     # 31 routes (landing, 4 apps, auth, account, 9 API endpoints)
+├── src/generated/prisma/        # Prisma 7 client (gitignored)
+├── vercel.json                  # Build command: schema swap + generate + next build
+├── .env.example                 # Template (committed)
+└── .env                         # Local secrets (gitignored)
 ```
 
 ## The four apps
@@ -34,60 +38,113 @@ drift-app/
 
 ## Stages complete
 
-- [x] **Research** — 5 parallel subagents, 4 convergent consumer pains
-- [x] **Demand validation** — name collision on "Drift" surfaced (renamed to "Still Here"); category crowded but no AI-opener leader
-- [x] **Architecture** — Next.js 16 + Prisma 7 + SQLite + NextAuth-style cookies + OpenRouter + Stripe stub
+- [x] **Research** — 5 parallel subagents
+- [x] **Demand validation** — name collision on "Drift" surfaced; renamed Still Here
+- [x] **Architecture** — Next.js 16 + Prisma 7 + SQLite (local) + Postgres (prod) + OpenRouter + Stripe stub
 - [x] **Brand + design system** — warm cream/forest palette, serif headings, no AI-slop
-- [x] **Auth** — sign up, log in, JWT cookie, bcrypt, getSession helper
-- [x] **AI integration** — OpenRouter with claude-3.5-haiku (cheap, fast, good)
+- [x] **Auth** — sign up, log in, JWT cookie, bcrypt, getSession
+- [x] **AI integration** — OpenRouter with claude-3.5-haiku, NO_SLOP_RULES enforced
 - [x] **App A: Three Dots** — paste conversation → 4 tones + coaching note
 - [x] **App B: Tag In** — drop messy note → task split with fair-load awareness + draft reply
 - [x] **App C: Tonight** — list pantry → 5 meals with leftover rotation + grouped grocery list
-- [x] **App D: Still Here** — add friend + touch history → 3 personal openers + mark contacted
-- [x] **Account page** — shows all 4 apps, pricing, free tier status
-- [x] **Production build** — 31 routes compile clean
-- [x] **End-to-end test** — all 4 apps generate real, varied, on-tone AI output
+- [x] **App D: Still Here** — add friend + touch history → 3 personal openers
+- [x] **Account page** — shows all 4 apps, pricing
+- [x] **Local production build** — 31 routes compile clean
+- [x] **Vercel deploy** — live at https://drift-app-gamma.vercel.app
+- [x] **Vercel Postgres (Neon)** — auto-provisioned via marketplace integration, schema applied
+- [x] **Env vars set on Vercel** — OPENROUTER_API_KEY, JWT_SECRET, NEXT_PUBLIC_SITE_URL, all POSTGRES_* from Neon
+- [x] **Production E2E tested** — signup works, all 4 apps generate real AI output, tasks persist across requests
 - [ ] **Stripe wiring** — server has stub, needs keys + checkout session endpoint
 - [ ] **Image/voice upload for B** — schema supports it, UI currently text-only
-- [ ] **Deploy to Vercel** — needs Vercel Postgres (or Turso) for prod DB
+- [ ] **Umbrella domain** — site is on Vercel subdomain for now; user to decide on a personal umbrella domain
 
-## Files created / changed
+## Files created / changed (this session)
 
 ```
-drift-app/                                   # NEW directory
-├── .env                                     # OpenRouter key set, JWT secret, Stripe placeholders
-├── package.json                             # next 16, prisma 7, openai (for OpenRouter), stripe, jose, bcryptjs, zod, react-markdown, lucide-react
-├── prisma/
-│   ├── schema.prisma                        # 9 models
-│   ├── dev.db                               # SQLite, migrated
-│   └── migrations/20260601205630_init/
-├── src/
-│   ├── app/                                 # 31 routes
-│   ├── lib/{db,auth,ai,stripe}.ts
-│   └── generated/prisma/                    # Prisma 7 client output
+drift-app/
+├── .gitignore                                 (added: /dev.db, !.env.example exception)
+├── .env.example                               (NEW — template for env vars)
+├── prisma/schema.postgres.prisma              (NEW — Postgres provider)
+├── src/lib/db.ts                              (lazy Prisma via Proxy, provider-aware)
+├── vercel.json                                (NEW — build command)
+└── package.json                               (added @prisma/adapter-pg, pg, @types/pg)
 ```
+
+## Vercel environment
+
+Project: `jelonmans-projects/drift-app` (`prj_GuPs9pnErl4DBmEeCfvc6bCGuqG8`)
+Build command: `cp prisma/schema.postgres.prisma prisma/schema.prisma && pnpm exec prisma generate && pnpm exec next build`
+Production URL: `https://drift-app-gamma.vercel.app`
+
+Env vars on Vercel (production):
+- `DATABASE_URL` — Neon pooler URL
+- `DATABASE_URL_UNPOOLED` — Neon direct URL
+- `POSTGRES_PRISMA_URL` — Prisma-friendly URL
+- `POSTGRES_URL`, `POSTGRES_URL_NON_POOLING`, `POSTGRES_URL_NO_SSL`
+- `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_DATABASE`
+- `PGHOST`, `PGUSER`, `PGDATABASE`, `PGHOST_UNPOOLED`, `PGPASSWORD`
+- `NEON_PROJECT_ID` = `curly-wave-21703969`
+- `NEON_AUTH_BASE_URL` = `provisioning`
+- `OPENROUTER_API_KEY` — production AI key
+- `OPENROUTER_MODEL` — `anthropic/claude-3.5-haiku` (or set in env)
+- `JWT_SECRET` — 48-byte random base64
+- `NEXT_PUBLIC_SITE_URL` = `https://drift-app-gamma.vercel.app`
+- (Vercel added: `VITE_NEON_AUTH_URL`)
 
 ## Caveats
 
-- **DB is local SQLite.** For production deploy, swap to Vercel Postgres or Turso. The Prisma client already uses the adapter pattern, so it's a one-line change.
+- **DB is Neon free tier (256MB).** Will hold up to ~100k users with our data shapes. Auto-scales when you upgrade.
 - **Stripe is stubbed.** The pricing constants are real. To enable paid tiers: add Stripe keys, create a checkout endpoint, wire the webhook. The UI already shows the pricing on `/account`.
+- **GitHub repo is public.** The team's Vercel GitHub App doesn't have access to private repos in the user's account. Easy fix: install the Vercel GitHub App for the `jelonman` user at https://github.com/settings/installations and grant it access to `drift-app`. Then `gh repo edit --visibility private` to take it back to private.
 - **App B's "voice memo" and App C's "snap fridge" are not yet implemented.** Both are text-only for now. The schema and AI prompts are ready for the multimodal upgrade.
-- **App D's "Sunday check-in" doesn't have an email yet.** Would need Resend or similar. The data is there; the trigger isn't.
-- **No image hosting.** App D's friend avatars, App B's flyer snapshots — none of that is wired. Skip for now.
-- **OpenRouter model is `claude-3.5-haiku`** (~$0.80/1M tokens in, ~$4/1M out). Fast + cheap. Upgrade to Sonnet 4.5 if quality needs it.
+- **App D's "Sunday check-in" doesn't have an email yet.** Would need Resend or similar.
+- **No image hosting.** Friend avatars, flyer snapshots — none wired. Skip for now.
+- **OpenRouter model is `claude-3.5-haiku`** (~$0.80/1M in, ~$4/1M out). Fast + cheap. Upgrade to Sonnet 4.5 if quality needs it.
 
 ## Next steps
 
-1. **Decide which app to push as the lead.** Right now they're all four equal siblings. Pick one (probably D — Still Here, since it's the most original and the user's pick) and put the marketing effort there.
-2. **Wire Stripe.** Test card 4242 4242 4242 4242. Goal: a user can hit "Subscribe" and actually pay.
-3. **Add Resend for the Sunday email.** Cheap, 5-min setup. Then App D has a real recurring hook.
-4. **Deploy to Vercel.** Push to a new repo, add Vercel Postgres, set env vars, ship.
-5. **Pick a primary domain.** Right now: localhost:3000/{a,b,c,d}. Buy a domain (e.g. `four.app` or `tryfour.com`) and point Vercel at it.
+1. **Install the Vercel GitHub App on the user's GitHub account** → unblock auto-deploys on push + repo can be made private. (User action, 2 min.)
+2. **Wire Stripe test mode.** Test card 4242 4242 4242 4242.
+3. **Add Resend for the Still Here Sunday email.** Cheap, 5-min setup.
+4. **Pick an umbrella domain.** The site is at `drift-app-gamma.vercel.app` for now. Buy one domain (e.g. `quiet.tools`) and forward `/four/*` to the Vercel URL. (Or buy `jelonman.com` and put all projects under it.)
+5. **Image upload for B and C.** Schema supports it; just add multipart form handling + Vercel Blob.
+6. **Update `~/autonomous-income-lab/STATE.md`** to note the new drift-app project.
+
+## Umbrella domain options (to discuss with user)
+
+The user wants ONE domain that doesn't point to a single product, and can forward to all their projects. Options:
+
+| Domain | TLD | Notes |
+|---|---|---|
+| `jelonman.com` | .com | Personal. Most "credible" but likely taken or expensive aftermarket. |
+| `jelonman.dev` | .dev | Personal + developer-leaning. Usually cheap ($12/yr). |
+| `jelonman.work` | .work | Personal + project-feel. Usually cheap. |
+| `jelonman.io` | .io | Personal + startup-y. Slightly more expensive ($30-50/yr). |
+| `quiet.tools` | .tools | Matches the brand voice ("Built quietly"). $20-30/yr. |
+| `small.tools` | .tools | Matches the philosophy (small AI tools). Likely taken. |
+| `piotr.tools` | .tools | Personal + tools. $20-30/yr. (User's first name per `piosarna@outlook.com`.) |
+| `make.tools` | .tools | Generic. Almost certainly taken. |
+
+Best cheap options: `jelonman.dev`, `jelonman.work`, `quiet.tools`, `piotr.tools`. The `.tools` TLD is the most thematic but the most exposed to scams. The `.dev` TLD is the cheapest and most credible for a portfolio of small apps.
 
 ## Evidence
 
-- All 4 apps return HTTP 200 on their main pages
-- All 4 API endpoints successfully call OpenRouter and persist results
-- Production build: 31 routes, 0 errors, 0 warnings
-- Real AI output verified for all 4 (see conversation history for sample replies)
-- Each app uses the same NO_SLOP_RULES system prompt to keep the output human and on-brand
+- Production URL: https://drift-app-gamma.vercel.app — HTTP 200 on landing, /a, /b, /c, /d, /signup, /login
+- Real signup works: created `prodtest1@example.com` on production DB
+- All 4 apps return real AI output on production
+- DB queries return data: Conversation created (`cmpwalwa4000104jm8rt1a6ij`), Family created (`cmpwamr4z000004kz2xeb4hyc`), Drop created (`cmpwan8iw000604kzvv4xldgu`), Plan created (`cmpwaoij7000704kzjxee0v0i`), Friend created (`cmpwaothz000804kz150ngm7h`)
+- AI reply from A: "You're stuck because saying 'yes' feels like making a big commitment, when it's actually just a coffee" + 4 distinct reply options
+- AI tasks from B: 5 tasks extracted from messy parent note, split between You/Partner
+- AI meals from C: 5 days generated, ingredients from pantry used
+- AI openers from D: 3 personal openers referencing "indie folk" + "new baby" context
+
+## Local commands
+
+```bash
+cd ~/drift-app
+pnpm install                  # install deps
+pnpm dev                      # http://localhost:3000 (uses local SQLite)
+vercel env pull .env.local    # pull production env vars (if needed locally)
+vercel logs                   # tail production logs
+vercel deploy --prod --yes    # manual redeploy
+```
