@@ -3,7 +3,7 @@ CREATE TABLE "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "stripeCustomerId" TEXT
 );
 
@@ -14,7 +14,7 @@ CREATE TABLE "Conversation" (
     "stage" TEXT NOT NULL,
     "mood" TEXT NOT NULL,
     "pastedText" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Conversation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE "Reply" (
     "tone" TEXT NOT NULL,
     "text" TEXT NOT NULL,
     "rationale" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Reply_conversationId_fkey" FOREIGN KEY ("conversationId") REFERENCES "Conversation" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -34,9 +34,9 @@ CREATE TABLE "Family" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "ownerId" TEXT NOT NULL,
     "partnerEmail" TEXT,
-    "pairedAt" TIMESTAMP(3),
+    "pairedAt" DATETIME,
     "inviteCode" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Family_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -48,10 +48,10 @@ CREATE TABLE "Task" (
     "title" TEXT NOT NULL,
     "description" TEXT,
     "status" TEXT NOT NULL DEFAULT 'open',
-    "dueDate" TIMESTAMP(3),
+    "dueDate" DATETIME,
     "source" TEXT NOT NULL DEFAULT 'ai',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "completedAt" TIMESTAMP(3),
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "completedAt" DATETIME,
     CONSTRAINT "Task_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "Task_assigneeId_fkey" FOREIGN KEY ("assigneeId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
@@ -62,7 +62,7 @@ CREATE TABLE "PantryItem" (
     "userId" TEXT NOT NULL,
     "item" TEXT NOT NULL,
     "category" TEXT NOT NULL,
-    "addedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "addedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "PantryItem_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -70,10 +70,10 @@ CREATE TABLE "PantryItem" (
 CREATE TABLE "MealPlan" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
-    "weekStart" TIMESTAMP(3) NOT NULL,
+    "weekStart" DATETIME NOT NULL,
     "planJson" TEXT NOT NULL,
     "groceryList" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "MealPlan_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -81,12 +81,12 @@ CREATE TABLE "MealPlan" (
 CREATE TABLE "Meal" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
+    "date" DATETIME NOT NULL,
     "name" TEXT NOT NULL,
     "cooked" BOOLEAN NOT NULL DEFAULT false,
-    "rating" BIGINT,
+    "rating" INTEGER,
     "notes" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Meal_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -99,8 +99,8 @@ CREATE TABLE "Friend" (
     "contactInfo" TEXT,
     "notes" TEXT,
     "importantDates" TEXT,
-    "lastContactAt" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastContactAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Friend_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -108,10 +108,10 @@ CREATE TABLE "Friend" (
 CREATE TABLE "Touchpoint" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "friendId" TEXT NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
+    "date" DATETIME NOT NULL,
     "note" TEXT,
     "channel" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Touchpoint_friendId_fkey" FOREIGN KEY ("friendId") REFERENCES "Friend" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -122,7 +122,7 @@ CREATE TABLE "Opener" (
     "tone" TEXT NOT NULL,
     "text" TEXT NOT NULL,
     "sent" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Opener_friendId_fkey" FOREIGN KEY ("friendId") REFERENCES "Friend" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 

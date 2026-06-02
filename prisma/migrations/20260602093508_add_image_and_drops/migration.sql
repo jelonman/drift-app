@@ -10,7 +10,7 @@ CREATE TABLE "Drop" (
     "taskIds" TEXT NOT NULL,
     "draftReply" TEXT,
     "needsClarification" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Drop_familyId_fkey" FOREIGN KEY ("familyId") REFERENCES "Family" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
