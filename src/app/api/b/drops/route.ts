@@ -8,7 +8,8 @@ import { PRICING } from "@/lib/stripe";
 
 const Body = z.object({
   familyId: z.string(),
-  text: z.string().min(10).max(8000),
+  text: z.string().max(8000).default(""),
+  imageUrl: z.string().url().max(2000).optional(),
 });
 
 export async function POST(req: Request) {
@@ -31,7 +32,13 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Please type a sentence or two." }, { status: 400 });
   }
-  const { familyId, text } = parsed.data;
+  const { familyId, text, imageUrl } = parsed.data;
+  if (!text || text.trim().length < 10) {
+    return NextResponse.json(
+      { error: "Please type a sentence or two so Tag In has something to work with." },
+      { status: 400 }
+    );
+  }
 
   const family = await prisma.family.findUnique({
     where: { id: familyId },
@@ -105,19 +112,14 @@ Output JSON with this exact shape:
     created.push(created_task.id);
   }
 
-  // Store the drop's metadata in a special "drop" task so we can show the result page
-  const meta = JSON.stringify({
-    raw: text,
-    draft_reply: result.draft_reply,
-    needs_clarification: result.needs_clarification,
-    task_ids: created,
-  });
-  const drop = await prisma.task.create({
+  const drop = await prisma.drop.create({
     data: {
       familyId: family.id,
-      assigneeId: null,
-      title: `__drop__${meta}`,
-      source: "ai",
+      rawText: text,
+      imageUrl: imageUrl ?? null,
+      taskIds: JSON.stringify(created),
+      draftReply: result.draft_reply,
+      needsClarification: result.needs_clarification,
     },
   });
 

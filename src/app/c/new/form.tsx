@@ -11,6 +11,7 @@ export default function NewPlanForm({ remaining, free }: { remaining: number; fr
   const [restrictions, setRestrictions] = useState("");
   const [servings, setServings] = useState(2);
   const [cuisines, setCuisines] = useState<string[]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -31,15 +32,29 @@ export default function NewPlanForm({ remaining, free }: { remaining: number; fr
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
-    if (pantry.trim().length < 5) {
-      setErr("List a few things you have. Even 'rice, eggs, butter, soy sauce' works.");
+    if (pantry.trim().length < 5 && !file) {
+      setErr("List a few things you have, or upload a fridge photo.");
       return;
     }
     setBusy(true);
+    let imageUrl: string | null = null;
+    if (file) {
+      const fd = new FormData();
+      fd.append("file", file);
+      const up = await fetch("/api/upload", { method: "POST", body: fd });
+      if (!up.ok) {
+        const j = await up.json().catch(() => ({}));
+        setErr(j.error || "Could not upload photo.");
+        setBusy(false);
+        return;
+      }
+      const j = await up.json();
+      imageUrl = j.url;
+    }
     const res = await fetch("/api/c/plans", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ pantry, restrictions, servings, cuisines }),
+      body: JSON.stringify({ pantry, restrictions, servings, cuisines, imageUrl }),
     });
     setBusy(false);
     if (!res.ok) {
@@ -61,6 +76,23 @@ export default function NewPlanForm({ remaining, free }: { remaining: number; fr
           rows={6}
           placeholder={`Examples:\n"chicken thighs (2), half a yellow onion, garlic, soy sauce, rice, broccoli, half a lemon, butter, eggs, pasta, canned tomatoes, ground beef (1 lb), frozen peas, olive oil, parmesan, sourdough bread"`}
         />
+      </div>
+      <div>
+        <label className="label" htmlFor="fridge-photo">
+          Or upload a fridge photo (optional)
+        </label>
+        <input
+          id="fridge-photo"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/heic"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          style={{ fontSize: "0.9rem" }}
+        />
+        {file && (
+          <p className="muted" style={{ fontSize: "0.8rem", marginTop: "0.3rem" }}>
+            {file.name} ({(file.size / 1024 / 1024).toFixed(1)} MB)
+          </p>
+        )}
       </div>
       <div>
         <label className="label">Any restrictions or dislikes? (optional)</label>

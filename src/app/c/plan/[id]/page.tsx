@@ -47,6 +47,15 @@ export default async function CPlanView({ params }: { params: Promise<{ id: stri
         </Link>
       </div>
 
+      {plan.imageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={plan.imageUrl}
+          alt="Your fridge"
+          style={{ maxWidth: "100%", maxHeight: 320, borderRadius: 12, border: "1px solid var(--color-ink-100)" }}
+        />
+      )}
+
       <section>
         <h2 className="serif" style={{ marginBottom: "0.75rem" }}>The week</h2>
         <div className="space-y-3">

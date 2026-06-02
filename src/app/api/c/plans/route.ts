@@ -7,10 +7,11 @@ import { canUseApp } from "@/lib/limits";
 import { PRICING } from "@/lib/stripe";
 
 const Body = z.object({
-  pantry: z.string().min(5).max(4000),
+  pantry: z.string().max(4000).default(""),
   restrictions: z.string().max(1000).default(""),
   servings: z.number().int().min(1).max(8).default(2),
   cuisines: z.array(z.string()).max(20).default([]),
+  imageUrl: z.string().url().max(2000).optional(),
 });
 
 export async function POST(req: Request) {
@@ -33,7 +34,13 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Please list a few things you have." }, { status: 400 });
   }
-  const { pantry, restrictions, servings, cuisines } = parsed.data;
+  const { pantry, restrictions, servings, cuisines, imageUrl } = parsed.data;
+  if (pantry.trim().length < 5 && !imageUrl) {
+    return NextResponse.json(
+      { error: "List a few things you have, or upload a fridge photo." },
+      { status: 400 }
+    );
+  }
 
   const recent = await prisma.meal.findMany({
     where: { userId: session.userId, cooked: true },
@@ -112,6 +119,7 @@ Output JSON with this exact shape:
       weekStart,
       planJson: JSON.stringify(result),
       groceryList: JSON.stringify(result.grocery_by_aisle),
+      imageUrl: imageUrl ?? null,
     },
   });
 

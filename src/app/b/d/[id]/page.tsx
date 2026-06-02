@@ -3,25 +3,23 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-type DropMeta = {
-  raw: string;
-  draft_reply: string | null;
-  needs_clarification: string | null;
-  task_ids: string[];
-};
-
 export default async function BDrop({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session) redirect("/login");
   const { id } = await params;
-  const drop = await prisma.task.findUnique({ where: { id } });
-  if (!drop || !drop.title.startsWith("__drop__")) notFound();
+  const drop = await prisma.drop.findUnique({ where: { id } });
+  if (!drop) notFound();
   const family = await prisma.family.findUnique({ where: { id: drop.familyId } });
   if (!family || family.ownerId !== session.userId) notFound();
 
-  const meta: DropMeta = JSON.parse(drop.title.slice("__drop__".length));
+  let taskIds: string[] = [];
+  try {
+    taskIds = JSON.parse(drop.taskIds);
+  } catch {
+    taskIds = [];
+  }
   const tasks = await prisma.task.findMany({
-    where: { id: { in: meta.task_ids } },
+    where: { id: { in: taskIds } },
     orderBy: { createdAt: "asc" },
   });
 
@@ -40,10 +38,19 @@ export default async function BDrop({ params }: { params: Promise<{ id: string }
         </p>
       </div>
 
-      {meta.needs_clarification && (
+      {drop.imageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={drop.imageUrl}
+          alt="Uploaded flyer"
+          style={{ maxWidth: "100%", borderRadius: "12px", border: "1px solid var(--color-ink-100)" }}
+        />
+      )}
+
+      {drop.needsClarification && (
         <div className="card-soft" style={{ background: "var(--color-clay-50)", borderColor: "var(--color-clay-100)" }}>
           <p className="label" style={{ color: "var(--color-clay-700)" }}>Need to know</p>
-          <p style={{ lineHeight: 1.55 }}>{meta.needs_clarification}</p>
+          <p style={{ lineHeight: 1.55 }}>{drop.needsClarification}</p>
         </div>
       )}
 
@@ -68,13 +75,13 @@ export default async function BDrop({ params }: { params: Promise<{ id: string }
         </div>
       )}
 
-      {meta.draft_reply && (
+      {drop.draftReply && (
         <div>
           <h3 className="serif" style={{ marginBottom: "0.5rem" }}>Draft reply</h3>
           <div className="card">
-            <p style={{ lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{meta.draft_reply}</p>
+            <p style={{ lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{drop.draftReply}</p>
             <div className="mt-3">
-              <CopyButton text={meta.draft_reply} />
+              <CopyButton text={drop.draftReply} />
             </div>
           </div>
         </div>
@@ -82,7 +89,7 @@ export default async function BDrop({ params }: { params: Promise<{ id: string }
 
       <div className="card-soft">
         <p className="label">Your raw note</p>
-        <p style={{ whiteSpace: "pre-wrap", color: "var(--color-ink-500)" }}>{meta.raw}</p>
+        <p style={{ whiteSpace: "pre-wrap", color: "var(--color-ink-500)" }}>{drop.rawText}</p>
       </div>
     </div>
   );

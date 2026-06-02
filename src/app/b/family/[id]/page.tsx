@@ -19,6 +19,12 @@ export default async function BFamilyBoard({ params }: { params: Promise<{ id: s
   const open = realTasks.filter((t) => t.status !== "done");
   const done = realTasks.filter((t) => t.status === "done");
 
+  const recentDrops = await prisma.drop.findMany({
+    where: { familyId: family.id },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
+
   async function toggleTask(formData: FormData) {
     "use server";
     const ses = await getSession();
@@ -89,6 +95,39 @@ export default async function BFamilyBoard({ params }: { params: Promise<{ id: s
           <div className="space-y-2">
             {done.slice(0, 10).map((t) => (
               <TaskRow key={t.id} t={t} ownerId={family.ownerId} toggle={toggleTask} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {recentDrops.length > 0 && (
+        <div>
+          <h3 className="serif" style={{ marginBottom: "0.75rem", color: "var(--color-ink-300)" }}>Recent drops</h3>
+          <div className="space-y-2">
+            {recentDrops.map((d) => (
+              <Link
+                key={d.id}
+                href={`/b/d/${d.id}`}
+                className="card flex items-center gap-3"
+                style={{ padding: "0.75rem 1.25rem", textDecoration: "none", color: "inherit" }}
+              >
+                {d.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={d.imageUrl}
+                    alt=""
+                    style={{ width: 48, height: 48, borderRadius: 6, objectFit: "cover", flexShrink: 0 }}
+                  />
+                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: "0.9rem", color: "var(--color-ink-700)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {d.rawText.slice(0, 80) || "(photo only)"}
+                  </p>
+                  <p className="muted" style={{ fontSize: "0.75rem" }}>
+                    {new Date(d.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </Link>
             ))}
           </div>
         </div>

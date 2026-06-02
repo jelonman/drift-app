@@ -82,6 +82,7 @@ model Family {
   inviteCode    String   @unique @default(cuid())
   createdAt     DateTime @default(now())
   tasks         Task[]
+  drops         Drop[]
 }
 
 model Task {
@@ -120,9 +121,24 @@ model MealPlan {
   weekStart DateTime
   planJson  String   // JSON: { days: [{ date, meals: [{ name, ingredients, instructions }] }] }
   groceryList String? // JSON: grouped grocery list
+  imageUrl  String?  // optional fridge photo
   createdAt DateTime @default(now())
 
   @@index([userId, weekStart])
+}
+
+model Drop {
+  id        String   @id @default(cuid())
+  familyId  String
+  family    Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  rawText   String
+  imageUrl  String?
+  taskIds   String   // JSON: [taskId1, taskId2]
+  draftReply String?
+  needsClarification String?
+  createdAt DateTime @default(now())
+
+  @@index([familyId, createdAt])
 }
 
 model Meal {
