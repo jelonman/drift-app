@@ -31,6 +31,13 @@ async function send(
     console.log(`[email] would send to ${to}: ${subject}`);
     return { ok: false, error: "RESEND_API_KEY not set" };
   }
+  // Resend in test mode only allows sending to the account owner's email.
+  // Skip silently if the recipient is someone else; we'll get full delivery once a domain is verified.
+  const ownerEmail = "piosarna@outlook.com";
+  if (to !== ownerEmail && fromAddress() === FROM_DEV) {
+    console.log(`[email] skip (test mode, not owner): ${to} — ${subject}`);
+    return { ok: false, error: "skipped: test mode" };
+  }
   try {
     const res = await c.emails.send({
       from: fromAddress(),

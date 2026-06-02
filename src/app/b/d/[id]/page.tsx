@@ -2,6 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import CopyButton from "./copy-button";
 
 export default async function BDrop({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -92,25 +93,5 @@ export default async function BDrop({ params }: { params: Promise<{ id: string }
         <p style={{ whiteSpace: "pre-wrap", color: "var(--color-ink-500)" }}>{drop.rawText}</p>
       </div>
     </div>
-  );
-}
-
-function CopyButton({ text }: { text: string }) {
-  return (
-    <form
-      action="javascript:void(0)"
-      onClick={async (e) => {
-        e.preventDefault();
-        await navigator.clipboard.writeText(text);
-        const el = e.currentTarget.querySelector("button") as HTMLButtonElement;
-        const orig = el.innerText;
-        el.innerText = "Copied";
-        setTimeout(() => { el.innerText = orig; }, 1200);
-      }}
-    >
-      <button type="button" className="btn-ghost" style={{ fontSize: "0.85rem" }}>
-        Copy draft
-      </button>
-    </form>
   );
 }
