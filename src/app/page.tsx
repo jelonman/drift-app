@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getSession } from "@/lib/auth";
 
 const APPS = [
   {
@@ -31,7 +32,14 @@ const APPS = [
   },
 ];
 
-export default function Home() {
+export const metadata = {
+  title: "Four — small tools for the friction in your life",
+  description: "Four separate apps for things you keep meaning to do.",
+  alternates: { canonical: "/" },
+};
+
+export default async function Home() {
+  const session = await getSession();
   return (
     <div className="max-w-5xl mx-auto px-6 pt-20 pb-32">
       <div className="max-w-2xl">
@@ -44,6 +52,16 @@ export default function Home() {
           a single page, a single habit, and a single subscription. No
           dashboards, no streaks, no notifications begging for attention.
         </p>
+        {!session && (
+          <div className="mt-8">
+            <Link href="/signup" className="btn-primary" style={{ fontSize: "1rem", padding: "0.7rem 1.4rem" }}>
+              Sign up free
+            </Link>
+            <span className="muted" style={{ marginLeft: "0.75rem", fontSize: "0.9rem" }}>
+              No card required.
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="mt-20 space-y-3">

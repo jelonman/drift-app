@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, PRICING } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
+import {
+  sendPaymentReceiptEmail,
+  sendSubscriptionCanceledEmail,
+} from "@/lib/email";
 import type Stripe from "stripe";
 
 export const runtime = "nodejs";
@@ -42,6 +46,14 @@ export async function POST(req: Request) {
         if (userId && app && subscriptionId) {
           const sub = await stripe.subscriptions.retrieve(subscriptionId);
           await upsertSubscription(userId, app, sub);
+          const user = await prisma.user.findUnique({ where: { id: userId } });
+          if (user && (app in PRICING)) {
+            const appName = PRICING[app as keyof typeof PRICING].name;
+            const amount = PRICING[app as keyof typeof PRICING].price;
+            sendPaymentReceiptEmail(user.email, appName, amount).catch((e) =>
+              console.error("[webhook] receipt email failed:", e)
+            );
+          }
         }
         break;
       }
@@ -57,12 +69,21 @@ export async function POST(req: Request) {
       }
       case "customer.subscription.deleted": {
         const sub = event.data.object as Stripe.Subscription;
-        await prisma.subscription
+        const existing = await prisma.subscription
           .update({
             where: { stripeSubscriptionId: sub.id },
             data: { status: "canceled", cancelAtPeriodEnd: true },
+            include: { user: true },
           })
           .catch(() => null);
+        if (existing && existing.user && (existing.app in PRICING)) {
+          const appName = PRICING[existing.app as keyof typeof PRICING].name;
+          sendSubscriptionCanceledEmail(
+            existing.user.email,
+            appName,
+            existing.currentPeriodEnd
+          ).catch((e) => console.error("[webhook] cancel email failed:", e));
+        }
         break;
       }
       default:

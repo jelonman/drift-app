@@ -1,3 +1,9 @@
 {
-  "buildCommand": "cp prisma/schema.postgres.prisma prisma/schema.prisma && pnpm exec prisma generate && pnpm exec next build"
+  "buildCommand": "cp prisma/schema.postgres.prisma prisma/schema.prisma && pnpm exec prisma generate && pnpm exec next build",
+  "crons": [
+    {
+      "path": "/api/cron/still-here-digest",
+      "schedule": "0 13 * * 0"
+    }
+  ]
 }

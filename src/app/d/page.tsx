@@ -2,6 +2,46 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { PRICING, getFreeLimit } from "@/lib/stripe";
+import { Hero } from "@/components/marketing/hero";
+import { HowItWorks } from "@/components/marketing/how-it-works";
+import { ForWho } from "@/components/marketing/for-who";
+import { SampleOutput } from "@/components/marketing/sample-output";
+import { Faq } from "@/components/marketing/faq";
+import { FinalCta } from "@/components/marketing/final-cta";
+
+export const metadata = {
+  title: "Still Here — Stay close to the people you keep meaning to text",
+  description:
+    "Add the friends you keep meaning to text. Still Here keeps a quiet eye on who you have not talked to in a while, drafts a personal opener, and reminds you a month later to see how it went.",
+  openGraph: {
+    title: "Still Here",
+    description: "Stay close to the people you keep meaning to text.",
+    type: "website",
+  },
+};
+
+const SAMPLE_FRIEND = {
+  name: "Maya Chen",
+  context: "College roommate. New baby, hates small talk, loves indie folk. Last real conversation was 4 months ago, around when the baby came.",
+};
+
+const SAMPLE_OPENERS = [
+  {
+    tone: "warm",
+    text: "Hey Maya, I have been thinking about you and wondering how life is treating you since the baby arrived. No pressure to respond, just sending some warmth your way.",
+    why: "Low-stakes. Acknowledges the major life change without demanding anything back.",
+  },
+  {
+    tone: "callback",
+    text: "Random thought: I heard a new Bon Iver track the other day and immediately thought of our late-night listening sessions back in the dorm. Made me miss our talks.",
+    why: "References a real shared thing. Gives her something easy to respond to or not.",
+  },
+  {
+    tone: "forward",
+    text: "I am curious how you are navigating parenthood. Have you discovered any unexpected joys or hilarious moments with the little one?",
+    why: "Shows genuine interest in her current life stage and invites her to share on her own terms.",
+  },
+];
 
 export default async function DLanding() {
   const session = await getSession();
@@ -9,90 +49,105 @@ export default async function DLanding() {
   const friends = session
     ? await prisma.friend.findMany({
         where: { userId: session.userId },
-        orderBy: { lastContactAt: { sort: "asc", nulls: "first" } },
+        orderBy: { createdAt: "desc" },
+        take: 5,
       })
     : [];
 
-  const now = Date.now();
-  const EIGHT_WEEKS = 8 * 7 * 24 * 60 * 60 * 1000;
-  const driftFriends = friends.filter(
-    (f) => !f.lastContactAt || now - new Date(f.lastContactAt).getTime() > EIGHT_WEEKS
-  );
+  const cta = session
+    ? { label: "Add a friend", href: "/d/friends/new" }
+    : { label: "Try Still Here free", href: "/signup" };
 
   return (
-    <div className="max-w-3xl mx-auto px-6 pt-16 pb-32">
-      <p className="pill mb-6">App 4 of 4</p>
-      <h1 style={{ fontSize: "3rem", lineHeight: 1.05, marginBottom: "1rem" }}>
-        Still Here
-      </h1>
-      <p style={{ fontSize: "1.25rem", color: "var(--color-ink-500)", marginBottom: "1.5rem", lineHeight: 1.4 }}>
-        Stay close to the people who used to be close.
-      </p>
-      <p style={{ color: "var(--color-ink-500)", lineHeight: 1.6, marginBottom: "2rem" }}>
-        Add the friends you keep meaning to text. Still Here keeps a quiet
-        eye on who you have not talked to in a while, drafts a personal
-        opener so you do not have to start from scratch, and remembers to
-        ask how it went a month later.
-      </p>
+    <div className="max-w-3xl mx-auto px-6 pt-16 pb-32 space-y-20">
+      <Hero
+        pill="Still Here · friendships"
+        title="Stay close to the people who used to be close."
+        subtitle="Add the friends you keep meaning to text. Still Here keeps a quiet eye on who you have not talked to in a while and drafts a personal opener."
+        body="It reads the notes you have on each friend — what you have been up to, what they have been up to, what you talked about last time — and writes a message that sounds like the relationship, not a LinkedIn check-in."
+        primary={cta}
+        secondary={{ label: "See an example", href: "#example" }}
+      />
 
-      {session ? (
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Link href="/d/friends" className="btn-primary" style={{ textDecoration: "none" }}>
-              Open Still Here
-            </Link>
-            <Link href="/d/friends/new" className="btn-secondary" style={{ textDecoration: "none" }}>
-              Add a friend
-            </Link>
-          </div>
-          {friends.length === 0 ? (
-            <p className="muted">No friends yet. Add someone to get started.</p>
-          ) : (
-            <div className="card-soft">
-              <p style={{ fontSize: "0.95rem" }}>
-                <strong>{driftFriends.length}</strong> friend{driftFriends.length === 1 ? "" : "s"} you have not talked to in 8+ weeks.
-              </p>
-              {driftFriends.length > 0 && (
-                <p className="muted" style={{ fontSize: "0.85rem", marginTop: "0.4rem" }}>
-                  {driftFriends.slice(0, 3).map((f) => f.name).join(", ")}
-                  {driftFriends.length > 3 ? `, and ${driftFriends.length - 3} more` : ""}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="card-soft">
-          <p style={{ marginBottom: "0.75rem" }}>
-            <Link href="/signup" style={{ fontWeight: 500 }}>Create an account</Link> to
-            save your friends and unlock {free} free uses.
+      <section id="example">
+        <h2 className="serif" style={{ marginBottom: "1.5rem", fontSize: "1.5rem" }}>
+          What you actually get
+        </h2>
+
+        <div className="card" style={{ padding: "1.25rem 1.5rem", marginBottom: "1rem" }}>
+          <p className="muted" style={{ fontSize: "0.85rem", marginBottom: "0.5rem" }}>
+            You added
           </p>
-          <p className="muted">Or <Link href="/login">log in</Link> if you have one.</p>
+          <p style={{ fontWeight: 500, marginBottom: "0.5rem" }}>{SAMPLE_FRIEND.name}</p>
+          <p style={{ color: "var(--color-ink-700)", lineHeight: 1.55, fontSize: "0.95rem" }}>
+            {SAMPLE_FRIEND.context}
+          </p>
         </div>
-      )}
 
-      <div className="mt-16">
-        <h3 className="serif" style={{ marginBottom: "1rem" }}>How it works</h3>
-        <ol style={{ color: "var(--color-ink-500)", lineHeight: 1.8, paddingLeft: "1.2rem" }}>
-          <li>Add the friends you care about. Just their name and a short note about who they are.</li>
-          <li>Mark a touchpoint after you text, call, or see them. One tap.</li>
-          <li>Open Still Here on Sunday. It picks 1-2 people you have not talked to in 8+ weeks.</li>
-          <li>It drafts three openers in different tones. Pick one, send it.</li>
-          <li>A month later, it pings you to see how it went.</li>
-        </ol>
-      </div>
+        <SampleOutput replies={SAMPLE_OPENERS} sampleChat={[]} />
 
-      <div className="mt-12 card-soft" style={{ background: "var(--color-forest-50)", borderColor: "var(--color-forest-100)" }}>
-        <p style={{ fontSize: "0.9rem", color: "var(--color-ink-500)" }}>
-          <strong>Privacy.</strong> Your friends' data stays in your account. We
-          never ask for access to your contacts. You type the names in
-          yourself.
+        <p className="muted" style={{ marginTop: "1rem", fontSize: "0.9rem" }}>
+          The opener reads what you wrote on Maya. Replace any phrase you want before sending.
         </p>
-      </div>
+      </section>
 
-      <p className="muted" style={{ marginTop: "2rem" }}>
-        Free for {free} friends. Then ${PRICING.d.price / 100}/mo for unlimited.
-      </p>
+      <HowItWorks
+        steps={[
+          { n: 1, title: "Add the people you keep meaning to text", body: "Name, how you know them, what is going on in their life right now, anything you have been meaning to ask. The more you write, the better the openers get." },
+          { n: 2, title: "Still Here watches quietly", body: "When it has been a while since you talked, you get a single nudge. One opener draft. Three tones to choose from." },
+          { n: 3, title: "You send it, or you do not", body: "No streaks. No 'you have not texted in 87 days.' Mark it sent when you do, and Still Here backs off for a while." },
+        ]}
+      />
+
+      <ForWho
+        title="Who this is for"
+        items={[
+          { text: "You have a list of 5-10 people you keep meaning to text but never do." },
+          { text: "You moved away from a city and the friendships you had there are drifting." },
+          { text: "You had a kid or a busy season and lost touch with people you did not want to lose touch with." },
+          { text: "You want a low-key way to keep up, not a CRM for your friendships." },
+        ]}
+      />
+
+      <ForWho
+        title="Not for"
+        variant="not"
+        items={[
+          { text: "If your circle is small and tight, just text them. This is for the people you are about to lose." },
+          { text: "If you are looking for a dating app or a way to meet new people, this is not it." },
+        ]}
+      />
+
+      <section>
+        <h2 className="serif" style={{ marginBottom: "0.5rem", fontSize: "1.5rem" }}>
+          Pricing
+        </h2>
+        <p className="muted" style={{ marginBottom: "1rem" }}>
+          Free for {free} friends. Then ${PRICING.d.price / 100}/mo for unlimited.
+        </p>
+        <div className="card" style={{ padding: "1.25rem 1.5rem" }}>
+          <p style={{ fontWeight: 500 }}>Still Here Plus · ${PRICING.d.price / 100}/mo</p>
+          <p className="muted" style={{ fontSize: "0.9rem", marginTop: "0.25rem" }}>
+            Unlimited friends. Weekly nudges. Daily on-demand openers.
+            Personal context memory per friend. Cancel any time.
+          </p>
+        </div>
+      </section>
+
+      <Faq
+        items={[
+          { q: "Is this creepy?", a: "It is a draft. You read it, edit it, and you send it. Nothing gets sent automatically. The context you write about your friends stays in your account and is never shared or used to train models." },
+          { q: "What does the nudge look like?", a: "One email a week, listing the friends you have not talked to recently. Click into any one of them to see the openers. You can mute individual friends or the whole thing." },
+          { q: "Will it text people for me automatically?", a: "No. We do not believe in that. It drafts. You send. The whole point is to keep the relationship human." },
+          { q: "What if I have not talked to someone in 5 years?", a: "Still Here will not push you. It will just quietly include them in your list so you can write a personal opener when you are ready. Some friendships need a long runway." },
+        ]}
+      />
+
+      <FinalCta
+        title="Add the people you keep meaning to text."
+        sub="Free for your first three friends. $5/mo after that. Cancel any time."
+        cta={cta}
+      />
     </div>
   );
 }

@@ -68,6 +68,10 @@ export default function SignUpPage() {
       <p className="muted" style={{ marginTop: "1.5rem", textAlign: "center" }}>
         Already have an account? <Link href="/login">Log in</Link>
       </p>
+      <p className="muted" style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.8rem" }}>
+        By signing up you agree to our <Link href="/terms">Terms</Link> and{" "}
+        <Link href="/privacy">Privacy</Link>.
+      </p>
     </div>
   );
 }
