@@ -1,11 +1,10 @@
 # omicron.ink — Live State
 
-## Status: Live at omicron.ink (DNS propagating)
+## Status: Live at omicron.ink
 
 Production URL: https://omicron.ink
-Fallback URL: https://drift-app-gamma.vercel.app (still works until DNS resolves)
 
-**All planned features shipped. Domain bought. End-to-end Stripe verified. Vercel Blob live. Resend wired (sandbox until DNS verify).**
+**All planned features shipped. Domain bought and resolving. End-to-end Stripe verified. Vercel Blob live. Resend wired (sandbox until domain verify). 4 apps verified working on production.**
 
 ## Stages complete
 - [x] 4 apps (Three Dots, Tag In, Tonight, Still Here) wired with OpenRouter AI

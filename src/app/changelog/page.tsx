@@ -16,6 +16,12 @@ const CHANGES: Change[] = [
   },
   {
     date: "2026-06-02",
+    title: "Switched to GPT-4o-mini, fixed JSON extraction",
+    body: "anthropic/claude-3.5-haiku stopped returning structured JSON on OpenRouter. Switched to openai/gpt-4o-mini which is faster and handles json_object properly. The JSON extractor now strips markdown fences so replies never come back blank.",
+  },
+
+  {
+    date: "2026-06-02",
     title: "Pricing page and changelog",
     body: "A consolidated /pricing view shows all four apps with what they cost and what the free tier includes. A new /changelog tracks the changes that shipped. No fanfare, just the diffs.",
   },
