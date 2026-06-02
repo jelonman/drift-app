@@ -1,20 +1,20 @@
 import OpenAI from "openai";
 
-const apiKey = process.env.OPENROUTER_API_KEY;
-const model = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
+const apiKey = process.env.OPENCODE_GO_API_KEY || process.env.OPENROUTER_API_KEY;
+const model = process.env.OPENCODE_GO_MODEL || process.env.OPENROUTER_MODEL || "deepseek-v4-flash";
+const baseURL = process.env.OPENCODE_GO_BASE_URL || "https://openrouter.ai/api/v1";
 
-// OpenRouter is OpenAI-compatible. We instantiate lazily so the build doesn't need the key.
 let _client: OpenAI | null = null;
 function getClient() {
   if (!apiKey) {
     throw new Error(
-      "OPENROUTER_API_KEY is not set. Add it to .env to enable AI features."
+      "No API key set. Add OPENCODE_GO_API_KEY or OPENROUTER_API_KEY to .env."
     );
   }
   if (!_client) {
     _client = new OpenAI({
       apiKey,
-      baseURL: "https://openrouter.ai/api/v1",
+      baseURL,
       defaultHeaders: {
         "HTTP-Referer": process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
         "X-Title": "omicron",
@@ -34,41 +34,55 @@ export type AIOptions = {
 
 export async function aiCall(opts: AIOptions): Promise<string> {
   const client = getClient();
-  const res = await client.chat.completions.create({
-    model,
-    temperature: opts.temperature ?? 0.7,
-    max_tokens: opts.maxTokens ?? 1024,
-    messages: [
-      ...(opts.system ? [{ role: "system" as const, content: opts.system }] : []),
-      ...opts.messages,
-    ],
-    ...(opts.json ? { response_format: { type: "json_object" as const } } : {}),
-  });
-  const content = res.choices[0]?.message?.content || "";
-  return content;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await client.chat.completions.create({
+      model,
+      temperature: opts.temperature ?? 0.7,
+      max_tokens: opts.maxTokens ?? 2048,
+      messages: [
+        ...(opts.system ? [{ role: "system" as const, content: opts.system }] : []),
+        ...opts.messages,
+      ],
+      ...(opts.json ? { response_format: { type: "json_object" as const } } : {}),
+    });
+    const content = res.choices[0]?.message?.content || "";
+    if (content) return content;
+    if (attempt < 2) {
+      const delay = (attempt + 1) * 500;
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  return "";
 }
 
-export async function aiJson<T = unknown>(opts: AIOptions): Promise<T> {
-  const text = await aiCall({ ...opts });
-  const clean = (s: string) => {
-    // Strip markdown code fences if the model wrapped JSON in them
-    const m = s.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (m) return m[1].trim();
-    // Strip leading/trailing backticks
-    return s.replace(/^`+|`+$/g, "").trim();
-  };
-  const t = clean(text);
+export function tryParseJSON(s: string): unknown {
   try {
-    return JSON.parse(t) as T;
+    return JSON.parse(s);
   } catch {
-    // Last resort: regex extract JSON object from the text
-    const m = t.match(/\{[\s\S]*\}/);
-    if (m) return JSON.parse(m[0]) as T;
-    throw new Error("AI did not return valid JSON: " + t.slice(0, 200));
+    const m = s.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const fixed = m[0]
+      .replace(/,\s*([}\]])/g, "$1")
+      .replace(/([{,]\s*)(\w+)(\s*:)/g, '$1"$2"$3')
+      .replace(/\/\/.*/g, "")
+      .replace(/\/\*[\s\S]*?\*\//g, "");
+    try { return JSON.parse(fixed); } catch { return null; }
   }
 }
 
-// Common system prompt builder that bans AI-slop phrasing across all 4 apps
+export async function aiJson<T = unknown>(opts: AIOptions): Promise<T> {
+  const text = await aiCall({ ...opts, json: true });
+  const clean = (s: string) => {
+    const m = s.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (m) return m[1].trim();
+    return s.replace(/^`+|`+$/g, "").trim();
+  };
+  const t = clean(text);
+  const parsed = tryParseJSON(t);
+  if (parsed) return parsed as T;
+  throw new Error("AI did not return valid JSON: " + t.slice(0, 200));
+}
+
 export const NO_SLOP_RULES = `
 BANNED PHRASES — do not use any of these or anything close:
 delve, dive in, dive into, leverage, leverage AI, unlock, harness, seamless, seamless experience, streamline, streamlined, robust, supercharge, transformative, foster, facilitate, holistic, synergy, paradigm, in today's fast-paced world, in this day and age, it's important to note, I hope this helps, in conclusion, ultimately, at the end of the day, navigate the complexities of, in the realm of, game-changer, revolutionary, cutting-edge, next-generation, AI-powered, powered by AI

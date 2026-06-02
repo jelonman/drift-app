@@ -97,7 +97,7 @@ Output JSON with this exact shape:
       { role: "user", content: `Here is the conversation:\n\n${pastedText}` },
     ],
     temperature: 0.8,
-    maxTokens: 900,
+    maxTokens: 3072,
   });
 
   for (const r of result.replies) {

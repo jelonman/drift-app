@@ -15,6 +15,7 @@ const Body = z.object({
 });
 
 export async function POST(req: Request) {
+  try {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
 
@@ -110,7 +111,7 @@ Output JSON with this exact shape:
     system,
     messages: [{ role: "user", content: "Plan the week." }],
     temperature: 0.7,
-    maxTokens: 2000,
+    maxTokens: 3072,
   });
 
   const plan = await prisma.mealPlan.create({
@@ -124,4 +125,8 @@ Output JSON with this exact shape:
   });
 
   return NextResponse.json({ id: plan.id });
+  } catch (err) {
+    console.error("[c/plans] error:", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }

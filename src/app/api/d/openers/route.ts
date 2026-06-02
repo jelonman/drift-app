@@ -61,7 +61,7 @@ Output JSON:
     system,
     messages: [{ role: "user", content: "Draft openers." }],
     temperature: 0.85,
-    maxTokens: 600,
+    maxTokens: 3072,
   });
 
   // Persist all three (none sent yet) so the history shows up

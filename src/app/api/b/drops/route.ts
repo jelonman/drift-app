@@ -94,7 +94,7 @@ Output JSON with this exact shape:
     system,
     messages: [{ role: "user", content: "Sort the note." }],
     temperature: 0.5,
-    maxTokens: 900,
+    maxTokens: 3072,
   });
 
   const created: string[] = [];
