@@ -1,10 +1,10 @@
 # omicron.ink — Live State
 
-## Status: Live at omicron.ink
+## Status: Live at omicron.ink — Fully Operational
 
 Production URL: https://omicron.ink
 
-**All planned features shipped. Domain bought and resolving. End-to-end Stripe verified. Vercel Blob live. Resend wired (sandbox until domain verify). 4 apps verified working on production.**
+**All planned features shipped and verified. Domain bought + DNS active. Resend domain verified. Emails sending from hello@omicron.ink. All 4 apps working end-to-end on production.**
 
 ## Stages complete
 - [x] 4 apps (Three Dots, Tag In, Tonight, Still Here) wired with OpenRouter AI
@@ -60,32 +60,27 @@ Production URL: https://omicron.ink
 - Tested: 200 with secret, 401 without
 
 ## Resend
-- 4 send functions (welcome, receipt, cancel, digest) wired
-- Test-mode filter REMOVED. Will attempt all recipients. Resend sandbox (onboarding@resend.dev) will reject non-owner with 403, but signup still completes and DB still updates.
-- Once domain verified at Resend, update RESEND_FROM_EMAIL=hello@omicron.ink and all sends land.
+- Domain `omicron.ink` verified (created via API with full-access key, DNS records added to Vercel)
+- Sending from `hello@omicron.ink` — verified: welcome email delivered
+- 4 send functions wired (welcome, receipt, cancel, digest)
+- Full-access API key created: `re_3vXCy6H6_AhUSCXswGNcojYPdvRNPX4DH` (saved in `.env` locally, also on Resend dashboard)
+- Send-only key `re_jBVy4pGk_7QiXZpTdYa7rQL3W3ohxrqJ9` still works and is on Vercel for all other projects
+- `flowsentinel.app` remains the verified domain for other projects
 
 ## Domain
 - `omicron.ink` bought via Vercel registrar, $2.99 first year, autoRenew off
 - Expires 2 June 2027
-- Added to project (verified: true)
-- Intended nameservers: ns1.vercel-dns.com, ns2.vercel-dns.com (propagating)
-- .ink TLD nameservers from registry a.nic.ink etc. need to point to Vercel. Fresh registration, may take 30min–2h.
-- NEXT_PUBLIC_SITE_URL env var updated to https://omicron.ink
+- Added to project — verified, DNS active (Vercel nameservers)
+- NEXT_PUBLIC_SITE_URL: https://omicron.ink
+- Resend verified: 3 DNS records added (DKIM, MX, SPF)
 
 ## Caveats
-- DNS propagation: omicron.ink may not resolve for ~1-2h. drift-app-gamma.vercel.app still works.
 - Stripe is in test mode — switch to live keys + new prices + new webhook for production
 - Vercel Blob store is provisioned, but B and C uploads are the only ones using it
-- Resend sandbox sender is `onboarding@resend.dev` (works only to account owner) until domain verified
 
 ## Next steps
-1. **Wait for DNS propagation** for omicron.ink (1-2h), then verify domain in Resend dashboard
-2. **Update RESEND_FROM_EMAIL env** to `hello@omicron.ink` once Resend verifies the domain
-3. **Stripe live mode**: swap `sk_test_` for `sk_live_` + new prices + new webhook
-4. **Distribution**: post on r/SoloFounders, r/IndieHackers, Indie Hackers, X (drafts in launch-content/LAUNCH-POSTS.md)
-
-## Hard-stops
-None currently. All routine infra work complete. Awaiting DNS propagation.
+1. **Stripe live mode**: swap `sk_test_` for `sk_live_` + new prices + new webhook
+2. **Distribution**: post on r/SoloFounders, r/IndieHackers, Indie Hackers, X (drafts in launch-content/LAUNCH-POSTS.md)
 
 ## Cleanup if aborting
 - `vercel rm drift-app`
