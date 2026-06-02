@@ -3,6 +3,8 @@ import { z } from "zod";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { aiJson, NO_SLOP_RULES } from "@/lib/ai";
+import { canUseApp } from "@/lib/limits";
+import { PRICING } from "@/lib/stripe";
 
 const Body = z.object({
   stage: z.string(),
@@ -34,6 +36,17 @@ const MOOD_LABELS: Record<string, string> = {
 export async function POST(req: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+
+  const allowed = await canUseApp(session.userId, "a");
+  if (!allowed) {
+    return NextResponse.json(
+      {
+        error: `You've used your ${PRICING.a.free} free conversations this month. Subscribe to keep going.`,
+        needsSubscription: true,
+      },
+      { status: 402 }
+    );
+  }
 
   const json = await req.json().catch(() => null);
   const parsed = Body.safeParse(json);

@@ -28,6 +28,24 @@ model User {
 
   // D. Still Here
   friends           Friend[]
+
+  subscriptions     Subscription[]
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  app                  String   // a, b, c, d
+  stripeCustomerId     String
+  stripeSubscriptionId String   @unique
+  status               String   // active, trialing, past_due, canceled, incomplete
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([userId, app, status])
 }
 
 // === A. THREE DOTS ===

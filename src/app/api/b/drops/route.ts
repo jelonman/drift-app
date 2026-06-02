@@ -3,6 +3,8 @@ import { z } from "zod";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { aiJson, NO_SLOP_RULES } from "@/lib/ai";
+import { canUseApp } from "@/lib/limits";
+import { PRICING } from "@/lib/stripe";
 
 const Body = z.object({
   familyId: z.string(),
@@ -12,6 +14,17 @@ const Body = z.object({
 export async function POST(req: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+
+  const allowed = await canUseApp(session.userId, "b");
+  if (!allowed) {
+    return NextResponse.json(
+      {
+        error: `Your free ${PRICING.b.free}-day trial is over. Subscribe to keep using Tag In.`,
+        needsSubscription: true,
+      },
+      { status: 402 }
+    );
+  }
 
   const json = await req.json().catch(() => null);
   const parsed = Body.safeParse(json);
