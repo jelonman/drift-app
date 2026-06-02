@@ -1,8 +1,8 @@
-# Four
+# omicron
 
-**Live:** https://drift-app-gamma.vercel.app
+**Live:** https://omicron.ink
 
-Four small AI tools, one quiet site.
+omicron — small tools for the friction in your life. Four apps. Each one its own subscription.
 
 | App | Slug | What it does |
 |---|---|---|
@@ -17,8 +17,9 @@ Four small AI tools, one quiet site.
 - **Database:** Prisma 7 + SQLite (local dev) / Neon Postgres (Vercel prod, auto-provisioned)
 - **Auth:** email + password with bcryptjs, JWT cookie via jose
 - **AI:** OpenRouter (`anthropic/claude-3.5-haiku` by default — fast + cheap)
-- **Payments:** Stripe (test mode wired, needs real keys to enable)
-- **Email:** Resend (wired, needs API key to enable)
+- **Payments:** Stripe (test mode live, 4 products + 4 prices + webhook)
+- **Email:** Resend (live; test-mode limited to account owner)
+- **Image uploads:** Vercel Blob (school flyer for B, fridge photo for C, 5MB max)
 - **Cron:** Vercel Cron (Sunday 13:00 UTC for Still Here digest)
 - **Styling:** Tailwind 4 with a custom warm palette — no AI-slop design
 - **Analytics:** Vercel Web Analytics
@@ -91,9 +92,6 @@ Per active user per month, at moderate use (5 AI calls per week per app):
 
 These are documented in detail in `STATE.md`. Short version:
 
-1. **Stripe** — create account → 4 monthly products → add 6 env vars to Vercel
-2. **Vercel Blob** — provision → add `BLOB_READ_WRITE_TOKEN` env (for flyer/fridge photo upload in B and C)
-3. **Resend** — create account → API key → add `RESEND_API_KEY` env
-4. **Cron secret** — `openssl rand -base64 32` → add `CRON_SECRET` env
-5. **Domain** — recommended `jelonman.dev` ($12/yr) for personal umbrella
-6. **GitHub repo privacy** — install Vercel GitHub App on jelonman account
+1. **Stripe** — swap test mode for live mode once you're ready to charge real cards.
+2. **Resend domain verification** — add the SPF + DKIM DNS records for `omicron.ink` to send from `hello@omicron.ink` (DNS records already propagate since the domain's on Vercel nameservers; verification happens once Vercel DNS is active).
+3. **A user** — share on Indie Hackers / Reddit / X. Drafts in `launch-content/LAUNCH-POSTS.md`.

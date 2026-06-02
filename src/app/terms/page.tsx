@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Terms — Four",
+  title: "Terms — omicron",
   description: "The rules of the road for using Four.",
 };
 
@@ -107,7 +107,7 @@ export default function TermsPage() {
           Contact
         </h2>
         <p style={{ lineHeight: 1.7 }}>
-          Questions: <a href="mailto:hello@four.tools">hello@four.tools</a>.
+          Questions: <a href="mailto:hello@omicron.ink">hello@omicron.ink</a>.
         </p>
       </section>
     </div>

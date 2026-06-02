@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Four — small tools for the things you keep meaning to do";
+export const alt = "omicron — small tools for the things you keep meaning to do";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

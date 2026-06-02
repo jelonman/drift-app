@@ -8,16 +8,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://drift-app-gamma.vercel.app"
   ),
-  title: "Four — small tools for the friction in your life",
-  description: "Four separate apps for things you keep meaning to do.",
+  title: "omicron — small tools for the friction in your life",
+  description: "omicron is 4 separate apps for things you keep meaning to do.",
   openGraph: {
-    title: "Four",
+    title: "omicron",
     description: "The friction in your life, four small fixes.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Four",
+    title: "omicron",
     description: "The friction in your life, four small fixes.",
   },
   alternates: {
@@ -58,13 +58,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Analytics />
         <footer style={{ borderTop: "1px solid var(--color-ink-100)", marginTop: "6rem", padding: "2rem 0", color: "var(--color-ink-300)", fontSize: "0.85rem" }}>
           <div className="max-w-5xl mx-auto px-6 flex items-center justify-between flex-wrap gap-2">
-            <span>Four — small tools for the friction in your life</span>
+            <span>omicron — small tools for the friction in your life</span>
             <span className="flex items-center gap-4">
               <Link href="/help" className="hover:text-[var(--color-ink-700)]">Help</Link>
               <Link href="/pricing" className="hover:text-[var(--color-ink-700)]">Pricing</Link>
               <Link href="/privacy" className="hover:text-[var(--color-ink-700)]">Privacy</Link>
               <Link href="/terms" className="hover:text-[var(--color-ink-700)]">Terms</Link>
-              <a href="mailto:hello@four.tools" className="hover:text-[var(--color-ink-700)]">Contact</a>
+              <a href="mailto:hello@omicron.ink" className="hover:text-[var(--color-ink-700)]">Contact</a>
               <span>· Built quietly on Vercel</span>
             </span>
           </div>

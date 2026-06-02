@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Privacy — Four",
+  title: "Privacy — omicron",
   description: "What we collect, what we do with it, and how to ask us to delete it.",
 };
 
@@ -109,7 +109,7 @@ export default function PrivacyPage() {
           Contact
         </h2>
         <p style={{ lineHeight: 1.7 }}>
-          Privacy questions: <a href="mailto:hello@four.tools">hello@four.tools</a>.
+          Privacy questions: <a href="mailto:hello@omicron.ink">hello@omicron.ink</a>.
         </p>
       </section>
     </div>

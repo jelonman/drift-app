@@ -2,13 +2,23 @@ import { readFileSync } from "fs";
 import path from "path";
 
 export const metadata = {
-  title: "What's new — Four",
-  description: "Recent changes to the four apps.",
+  title: "What's new — omicron",
+  description: "Recent changes to omicron.",
 };
 
 type Change = { date: string; title: string; body: string };
 
 const CHANGES: Change[] = [
+  {
+    date: "2026-06-02",
+    title: "Domain is omicron.ink",
+    body: "The site now lives at https://omicron.ink. The brand changed from the working name to a real name. The 4 apps are unchanged.",
+  },
+  {
+    date: "2026-06-02",
+    title: "Pricing page and changelog",
+    body: "A consolidated /pricing view shows all four apps with what they cost and what the free tier includes. A new /changelog tracks the changes that shipped. No fanfare, just the diffs.",
+  },
   {
     date: "2026-06-02",
     title: "Image uploads for Tag In and Tonight",

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Help — Four",
+  title: "Help — omicron",
   description: "How to use the four apps, what they cost, and how to cancel.",
 };
 
@@ -111,7 +111,7 @@ export default function HelpPage() {
               Can I get a refund?
             </h3>
             <p className="muted" style={{ lineHeight: 1.55, fontSize: "0.95rem" }}>
-              We do not offer refunds for partial months. If you were charged in error or the app was broken when you tried to use it, email <a href="mailto:hello@four.tools">hello@four.tools</a> and we will figure it out.
+              We do not offer refunds for partial months. If you were charged in error or the app was broken when you tried to use it, email <a href="mailto:hello@omicron.ink">hello@omicron.ink</a> and we will figure it out.
             </p>
           </div>
           <div className="card" style={{ padding: "1rem 1.25rem" }}>
@@ -119,7 +119,7 @@ export default function HelpPage() {
               How do I delete my account?
             </h3>
             <p className="muted" style={{ lineHeight: 1.55, fontSize: "0.95rem" }}>
-              Email <a href="mailto:hello@four.tools">hello@four.tools</a> with the email you signed up with. We delete everything within seven days and email you back when it is done. There is no in-app button because we want you to be sure.
+              Email <a href="mailto:hello@omicron.ink">hello@omicron.ink</a> with the email you signed up with. We delete everything within seven days and email you back when it is done. There is no in-app button because we want you to be sure.
             </p>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function HelpPage() {
           Still stuck?
         </h2>
         <p>
-          Email <a href="mailto:hello@four.tools">hello@four.tools</a>. A real
+          Email <a href="mailto:hello@omicron.ink">hello@omicron.ink</a>. A real
           person (or one good AI) will reply within a day or two.
         </p>
       </section>

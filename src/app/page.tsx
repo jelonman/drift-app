@@ -33,8 +33,8 @@ const APPS = [
 ];
 
 export const metadata = {
-  title: "Four — small tools for the friction in your life",
-  description: "Four separate apps for things you keep meaning to do.",
+  title: "omicron — small tools for the friction in your life",
+  description: "omicron is 4 separate apps for things you keep meaning to do.",
   alternates: { canonical: "/" },
 };
 

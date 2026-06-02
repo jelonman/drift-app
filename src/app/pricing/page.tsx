@@ -1,7 +1,7 @@
 import { PRICING } from "@/lib/stripe";
 
 export const metadata = {
-  title: "Pricing — Four",
+  title: "Pricing — omicron",
   description: "One free tier per app. Subscribe to any of the four for $5-9 a month. Cancel any time.",
 };
 
