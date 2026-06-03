@@ -69,7 +69,7 @@ export default function Pricing() {
       </div>
 
       <p className="text-center muted" style={{ fontSize: "0.85rem" }}>
-        Stripe is in test mode. Use card 4242 4242 4242 4242 with any future date, any CVC, any ZIP.
+        Your card is charged in USD. Receipts go to your email. Cancel any time.
       </p>
     </div>
   );

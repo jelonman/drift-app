@@ -151,8 +151,7 @@ export default async function AccountPage({
         )}
         {stripeReady && (
           <p className="muted" style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
-            Stripe is in test mode. Use card 4242 4242 4242 4242, any future
-            date, any CVC, any ZIP.
+            Your card is charged in USD. Cancel any time from the Stripe portal.
           </p>
         )}
       </div>
